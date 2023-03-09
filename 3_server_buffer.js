@@ -40,10 +40,10 @@ function rqListener(req, res) {
     // To exit the process
     // process.exit();
     
-    res.write('<html>');
-    res.write('<body><h1>Hello World</h1></body>');
-    res.write('</html>');
-    res.end();
+    // res.write('<html>');
+    // res.write('<body><h1>Hello World</h1></body>');
+    // res.write('</html>');
+    // res.end();
 
     // You can also do this
     // return res.end();
@@ -52,3 +52,18 @@ function rqListener(req, res) {
 const server = http.createServer(rqListener);
 
 server.listen(3000);
+
+/**
+ * npm install nodemon so that it restarts your app if any file changes.
+ * Open launch.json which is in your project and add,
+ * restart: true,
+ * runtimeExecutable: "nodemon",
+ * console: integratedTerminal
+ * 
+ * console is using intergrated Terminal in visual code
+ * 
+ * runtimeExecutable will look for nodemon globally.
+ * 
+ * For more configuration
+ * https://code.visualstudio.com/docs/nodejs/nodejs-debugging
+ */
