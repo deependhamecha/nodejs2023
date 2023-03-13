@@ -32,4 +32,6 @@ app.use(shopRoutes);
 
 app.use(errorController.get404Page);
 
-app.listen(3000);
+app.listen(3000, () => {
+    console.log("Started Local server on Port 3000.");
+});
