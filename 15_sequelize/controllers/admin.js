@@ -12,6 +12,9 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProduct = (req, res, next) => {
+
+  req.user.createProduct();
+
   const title = req.body.title;
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
@@ -21,7 +24,8 @@ exports.postAddProduct = (req, res, next) => {
     title,
     imageUrl,
     price,
-    description
+    description,
+    userId: req.user.id
   }).then(result => {
     console.log(result);
     res.redirect('/admin/products');
@@ -88,7 +92,9 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.findAll().then(products => {
+
+  // Product.findAll()
+  req.user.getProducts().then(products => { // Use Model Data just like eloquent
     res.render('admin/products', {
       prods: products,
       pageTitle: 'Admin Products',
