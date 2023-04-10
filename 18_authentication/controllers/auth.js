@@ -1,10 +1,13 @@
+const bcrypt = require('bcrptjs');
+
 const User = require('../models/user');
 
 exports.getLogin = (req, res, next) => {
   res.render('auth/login', {
     path: '/login',
     pageTitle: 'Login',
-    isAuthenticated: false
+    isAuthenticated: false,
+    errorMessage: req.flash('error')
   });
 };
 
@@ -17,8 +20,38 @@ exports.getSignup = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
-  User.findById('5bab316ce0a7c75f783cb8a8')
+  const email = req.body.email;
+  const password = req.body.password;
+
+  User.findOne({email})
     .then(user => {
+      if(!user) {
+        req.flash('error', 'Invalid email or password.');
+        return res.redirect('/login');
+      }
+
+      bcrypt.compare(password, user.password).then(
+        doMatch => {
+          if(doMatch) {
+            req.session.isLoggedIn = true;
+            req.session.user = user;
+
+            return req.session.save(err => {
+              res.redirect('/');
+            });
+          }
+          // Does not match
+          else {
+            res.redirect('/login');
+          }
+        }
+      ).catch(err => {
+
+        // This block is error and when password does not match.
+        console.log(err);
+        res.redirect('/login');
+      });
+
       req.session.isLoggedIn = true;
       req.session.user = user;
       req.session.save(err => {
@@ -39,16 +72,19 @@ exports.postSignup = (req, res, next) => {
       if(userDoc) {
         return res.redirect('/signup');
       } else {
-        const user = new User({
-          name: '',
-          email: email,
-          password: password,
+        return bcrypt.hash(password, 12).then(hashedPassword => {
+          const user = new User({
+            name: '',
+            email: email,
+            password: hashedPassword,
+          });
+      
+          return user.save();
         });
-
-        return user.save();
       }
     }
   )
+
   .then(result => {
     return res.redirect('/login');
   })
